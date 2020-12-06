@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  order-service:
+    build: './order-service'
+    ports:
+      - '5555:5555'
+      - '5557:5557'
+  # delivery:
+  #   build: "."
+  #   command: "delivery-service"
+  #   ports:
+  #     - "8000:8000"
+  # restaurant:
+  #   build: "."
+  #   command: "restaurant-service"
+  #   ports:
+  #     - "9000:9000"
