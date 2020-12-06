@@ -1,17 +1,18 @@
 version: '3.7'
 services:
-  order-service:
+  order:
     build: './order-service'
     ports:
-      - '5555:5555'
-      - '5557:5557'
-  # delivery:
-  #   build: "."
-  #   command: "delivery-service"
-  #   ports:
-  #     - "8000:8000"
-  # restaurant:
-  #   build: "."
-  #   command: "restaurant-service"
-  #   ports:
-  #     - "9000:9000"
+      - '3000:3000'
+  delivery:
+    build: './delivery-service'
+    command: 'delivery-service'
+    environment:
+      ZMQ_SUB_ADDRESS: 'tcp://order:5555'
+      ZMQ_PUSH_ADDRESS: 'tcp://order:5557'
+  restaurant:
+    build: './restaurant-service'
+    command: 'restaurant-service'
+    environment:
+      ZMQ_SUB_ADDRESS: 'tcp://order:5555'
+      ZMQ_PUSH_ADDRESS: 'tcp://order:5557'
