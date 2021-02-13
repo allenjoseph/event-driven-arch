@@ -10,4 +10,4 @@ Sample of Event-Driven Architecture
 
 ### Frontend
 
-- FTGO: website of "Food to Go"
+- FTGO Website (react)
