@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { Socket, socket } from 'zeromq';
+import { Socket } from 'zeromq';
+import { MessagingService } from './messaging.service';
 
 interface Order {
   uuid?: string;
@@ -16,16 +17,10 @@ export class OrderService {
 
   private orders: Order[] = [];
 
-  constructor() {
-    // Configure Pub Socket
-    this.publisher = socket('pub');
-    this.publisher.bindSync('tcp://*:5555');
-    Logger.log('Publisher bound to port 5555', 'ORDER_SERVICE');
+  constructor(private messaging: MessagingService) {
+    this.publisher = this.messaging.bindPubSocket('tcp://*:5555');
 
-    // Configure Pull Socket
-    this.puller = socket('pull');
-    this.puller.bindSync('tcp://*:5557');
-    Logger.log('Puller connected to port 5557', 'ORDER_SERVICE');
+    this.puller = this.messaging.bindPullSocket('tcp://*:5557');
     this.puller.on('message', (msg) => {
       Logger.log(msg.toString(), 'ORDER_SERVICE');
     });
@@ -44,7 +39,8 @@ export class OrderService {
 
   private publishOrderCreatedEvent(order: Order) {
     const topic = 'order_created';
+
     this.publisher.send([topic, JSON.stringify(order)]);
-    Logger.log('Order created event published', 'ORDER_SERVICE');
+    Logger.log('Event OrderCreated published!', 'ORDER_SERVICE');
   }
 }
