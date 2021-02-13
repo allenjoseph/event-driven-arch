@@ -7,3 +7,7 @@ Sample of Event-Driven Architecture
 - Order Service (nodejs)
 - Restaurant Service (golang)
 - Delivery Service (golang)
+
+### Frontend
+
+- FTGO: website of "Food to Go"
