@@ -14,7 +14,7 @@ import (
 type DeliveryEvent struct {
 	UUID     string `json:"uuid"`
 	Order    string `json:"order"`
-	Delivery string `json:"delivery"`
+	Rider    string `json:"rider"`
 }
 
 // OrderEvent struct
@@ -43,10 +43,11 @@ func Run() {
 			log.Println(err)
 			continue
 		}
-		log.Printf("Event OrderCreated received! %s", evt)
+		log.Printf("Event OrderCreated received!")
+		payload := evt[1];
 
 		var order OrderEvent
-		err = json.Unmarshal([]byte(evt[1]), &order)
+		err = json.Unmarshal([]byte(payload), &order)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -54,9 +55,9 @@ func Run() {
 
 		// Setup Delivery Assignment
 		deliveryData := DeliveryEvent{
-			UUID:     uuid.New().String(),
-			Order:    order.UUID,
-			Delivery: "Allen Joseph",
+			UUID:  uuid.New().String(),
+			Order: order.UUID,
+			Rider: "Allen Joseph",
 		}
 
 		deliveryEvt, err := json.Marshal(deliveryData)
@@ -66,10 +67,11 @@ func Run() {
 		}
 
 		// Push Delivery Assigned Event
-		result, err := deliveryChannel.Send(string(deliveryEvt), 0)
+		const zmqDontwait = 0;
+		result, err := deliveryChannel.Send(string(deliveryEvt), zmqDontwait)
 		if err != nil {
 			log.Println(err)
 		}
-		log.Printf("event DeliveryAssigned  pushed! (%d)(%s)", result, deliveryEvt)
+		log.Printf("event DeliveryAssigned  pushed! \nmessage id: %d\npayload: %s", result, deliveryEvt)
 	}
 }

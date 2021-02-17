@@ -12,7 +12,7 @@ import (
 
 // ConnectToDeliveryChannel PUSH socket
 func ConnectToDeliveryChannel() (*zmq.Socket) {
-	pushAddr := env.GetEnv("ZMQ_PUSH_ADDRESS", "tcp://127.0.0.1:5555")
+	pushAddr := env.GetEnv("ZMQ_PUSH_ADDRESS", "tcp://127.0.0.1:5557")
 
 	log.Printf("ConnectToDeliveryChannel (PUSH socket) starting on %s", pushAddr)
 	push, err := messaging.ConnectToPushSocket(pushAddr)
