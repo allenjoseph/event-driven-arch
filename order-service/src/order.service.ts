@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { Socket } from 'zeromq';
 import { MessagingService } from './messaging.service';
 
-interface Order {
-  uuid?: string;
+export interface Order {
+  uuid: string;
   dish: string;
   address: string;
   note: string;
@@ -26,15 +25,14 @@ export class OrderService {
     });
   }
 
-  async createOrder(order: Order): Promise<string> {
-    order.uuid = uuidv4();
+  async createOrder(order: Order): Promise<any> {
     this.orders.push(order);
     Logger.log('Order created!', 'ORDER_SERVICE');
 
     // Publish Domain Event
     this.publishOrderCreatedEvent(order);
 
-    return order.uuid;
+    return { status: 'PROCESSING' };
   }
 
   private publishOrderCreatedEvent(order: Order) {
