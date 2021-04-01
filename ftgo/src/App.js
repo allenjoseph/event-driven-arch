@@ -1,32 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState, useEffect } from "react";
 
-dayjs.extend(relativeTime);
-
-const dishes = [
-  { name: "Lomo saltado", address: "Jirón Cabo Pantoja, 454" },
-  { name: "Aji de gallina", address: "Avenida Grau, 1214" },
-  { name: "Ceviche", address: "Avenida Alfredo Mendiola, 6821" },
-  { name: "Pachamanca", address: "Avenida Mártires De Uchuraccay, 956" },
-  { name: "Cuy chactado", address: "Jiron Chavin, 80" },
-  { name: "Tacacho con cecina", address: "Jirón Jimenez Pimentel, 541" },
-];
-
-function ProgressItem(props) {
-  return (
-    <li className="list-group-item d-flex justify-content-between align-items-center">
-      {JSON.stringify(props.progress.data)}
-      <span className="badge badge-light badge-pill">
-        {dayjs(props.progress.timestamp).fromNow()}
-      </span>
-    </li>
-  );
-}
+import { ProgressItem } from "./ProgressItem";
+import { OrderForm } from "./OrderForm";
 
 function App() {
-  const formEl = useRef(null);
   const [order, setOrder] = useState(null);
   const [progressItems, setProgressItems] = useState([]);
 
@@ -40,27 +17,18 @@ function App() {
       body: JSON.stringify(order),
     })
       .then((res) => res.json())
-      .then((data) => addProgress(data))
-      .catch((err) => addProgress(err));
+      .then((data) => addProgress(data, 'Order received success.'))
+      .catch((err) => addProgress(err, 'Order rejected failed.'));
   }, [order]);
 
-  const addProgress = (data) => {
-    const item = { data, timestamp: Date.now() };
+  function addProgress (data, title) {
+    const item = { data, timestamp: Date.now(), title };
     setProgressItems([...progressItems, item]);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const order = {
-      uuid: uuidv4(),
-      dish: e.target.dish.value,
-      address: e.target.address.value,
-      note: e.target.note.value,
-    };
-    addProgress(order);
+  function onSubmitOrder(order) {
+    addProgress(order, 'Order submitted.');
     setOrder(order);
-    formEl.current.reset();
   };
 
   return (
@@ -85,57 +53,11 @@ function App() {
       <hr />
       <div className="row">
         <div className="col-md-6">
-          <form className="my-2" onSubmit={handleSubmit} ref={formEl}>
-            <div className="form-group">
-              <label htmlFor="formControlNoteDish">Dish</label>
-              <select
-                name="dish"
-                onChange={(e) =>
-                  (formEl.current.address.value = dishes.find(
-                    (o) => o.name === e.target.value
-                  ).address)
-                }
-                className="form-control"
-                id="formControlNoteDish"
-              >
-                <option value="">Select a dish</option>
-                {dishes.map((dish, index) => (
-                  <option key={index} value={dish.name}>
-                    {dish.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="formControlAddress">Address</label>
-              <input
-                type="text"
-                name="address"
-                className="form-control"
-                id="formControlAddress"
-                placeholder="Select a dish"
-                readOnly="readonly"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="formControlNote">Note</label>
-              <textarea
-                name="note"
-                className="form-control"
-                id="formControlNote"
-                rows="3"
-              ></textarea>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Order
-            </button>
-          </form>
+          <OrderForm onSubmitOrder={onSubmitOrder}></OrderForm>
         </div>
         <div className="col-md-6">
           <ul className="list-group">
-            {progressItems.map((item, index) => (
-              <ProgressItem key={index} progress={item}></ProgressItem>
-            ))}
+            {progressItems.map((item, index) => (<ProgressItem key={index} progress={item}></ProgressItem>))}
           </ul>
         </div>
       </div>
