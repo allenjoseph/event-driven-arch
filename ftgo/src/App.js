@@ -21,6 +21,14 @@ function App() {
       .catch((err) => addProgress(err, 'Order rejected failed.'));
   }, [order]);
 
+  useEffect(() => {
+    const socket = window.io('http://localhost:8080');
+    socket.on('orderEvents', function(ev) {
+      console.log('orderEvents', ev);
+      // addProgress(ev.payload, ev.title);
+    });
+  }, [])
+
   function addProgress (data, title) {
     const item = { data, timestamp: Date.now(), title };
     setProgressItems([...progressItems, item]);

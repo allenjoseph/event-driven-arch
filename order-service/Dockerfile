@@ -6,4 +6,7 @@ WORKDIR /app
 COPY . .
 RUN npm install
 RUN npm run build
+EXPOSE 8080
+EXPOSE 5555
+EXPOSE 5557
 CMD ["npm", "run", "start:prod"]

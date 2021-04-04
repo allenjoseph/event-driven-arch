@@ -43,11 +43,10 @@ func Run() {
 			log.Println(err)
 			continue
 		}
-		log.Printf("Event OrderCreated received!")
-		payload := evt[1];
+		log.Printf("Event OrderCreated received! %s", evt[1])
 
 		var order OrderEvent
-		err = json.Unmarshal([]byte(payload), &order)
+		err = json.Unmarshal([]byte(evt[1]), &order)
 		if err != nil {
 			log.Println(err)
 			continue

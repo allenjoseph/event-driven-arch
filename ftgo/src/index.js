@@ -3,6 +3,11 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+const socket = window.io('http://localhost:8080');
+socket.on('connect', function() {
+  console.log('Websocket Connected');
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
